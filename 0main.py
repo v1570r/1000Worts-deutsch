@@ -1,7 +1,7 @@
 import sys, csv
 
 from _1complemento import llamarURL, repeticiones, ipa, aussprache, BlockCaracteristicas, Bedeutung, Bedeutungy
-from _1html import sustitucion, listar
+from _1html import sustitucion, listar, ordenar
 from _1traduccion import ubersetzen
 
 if 2 >= len(sys.argv):
@@ -40,6 +40,7 @@ with open(dateiname, newline='') as datei:
             if bedeutung is not None:
                 bedeutung = sustitucion(bedeutung)
                 bedeutung = listar(bedeutung)
+                bedeutung = ordenar(bedeutung)
 
             worterbuch.writerow(
                 {
