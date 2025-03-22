@@ -9,7 +9,7 @@ n_traductor = 0
 class Ubersetzungsprogramm:
     def __init__(self, operador="deepl"):
         with open("api.key", 'r') as datei:
-            self.lizenzschlussel = datei.read()
+            self.lizenzschlussel = datei.readline()[:-1]
 
         if   operador == "deepl":
             self.traductor = self.__deepl
@@ -22,6 +22,7 @@ class Ubersetzungsprogramm:
     def __deepl(self, text: str) -> str:
         global n_traductor
         zielsprache = sys.argv[2]
+        global n_traductor
         traduccion = "Traducido{0}: {1}".format(zielsprache, n_traductor)
         print("Traducido{0} {1}: {2}".format(zielsprache, n_traductor, text))
         n_traductor += 1

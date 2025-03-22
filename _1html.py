@@ -129,6 +129,9 @@ def ordenar(html):
     etiqueta_cierre   = '</' + etiqueta_inicial + '>'
     etiqueta_definicion_apertura = '<div class="dwdswb-lesart-def"'
     etiqueta_definicion_cierre   = '</div>'
+    # TODO Ahora la gramática se quiere (evitará limpiar cosas)
+    # etiqueta_definicion_apertura = '<div class="dwdswb-ft-la"'
+    # etiqueta_definicion_cierre   = '</div>'
 
     def listado(bloque):
         orden_posicion_final = bloque.find('"', len(etiqueta_apertura))
@@ -149,6 +152,18 @@ def ordenar(html):
         posicion_definicion_final   = bloque.find(etiqueta_definicion_cierre, posicion_definicion_inicial)
         posicion_div_final = posicion_definicion_final + len(etiqueta_definicion_cierre)
         definicion = bloque[posicion_definicion_inicial:posicion_definicion_final]
+        if definicion == recortador(bloque[bloque.find(etiqueta_definicion_apertura):], "span"):
+            print("EXISTO", definicion)
+        else:
+            print("FRACASO", definicion, "·$·", recortador(bloque[bloque.find(etiqueta_definicion_apertura):], "span"))
+        input("PAUSA")
+        #TODO recortador está claramente mal
+        '''FRACASO  ·$· <div class="dwdswb-lesart-def"></div><div class="dwdswb-ft-la"><div>Grammatik: <span class="dwdswb-einschraenkung">verbindet einzelne Wörter zu einem Satzglied</span>
+PAUSA
+FRACASO  ·$· <div class="dwdswb-lesart-def"></div><div class="dwdswb-ft-la"><div>Grammatik: <span class="dwdswb-einschraenkung">in Aufzählungen</span>
+PAUSA
+FRACASO  ·$· <div class="dwdswb-lesart-def"></div><div class="dwdswb-ft-la"><div>Grammatik: <span class="dwdswb-einschraenkung">bei mehrgliedrigen Aufzählungen steht »und« meist vor dem letzten Glied</span>
+PAUSA'''
 
         posicion_inicial_hijo = bloque.find(etiqueta_apertura,orden_posicion_final)
         if -1 != posicion_inicial_hijo:
