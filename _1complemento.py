@@ -1,5 +1,6 @@
 import json, urllib.parse, os
 import time
+from random import randint
 from urllib.request import urlopen, urlretrieve
 from _1html import eliminar_etiqueta, recortador, sustitucion, listar
 
@@ -70,11 +71,14 @@ def aussprache(web):
 
 
 def repeticiones(lemma):#https://www.dwds.de/api/frequency/?q=Haus
+    MAXIM = 1108780648
     url = "https://www.dwds.de/api/frequency/?q=" + urllib.parse.quote(lemma)
     apiseite = llamarURL(url)
     apibytes = apiseite.read()
     veces_usadas = json.loads(apibytes.decode("utf-8"))
-    return veces_usadas["hits"]
+    if veces_usadas["hits"] is None or veces_usadas["hits"] == 0:
+        return randint(MAXIM, 2*MAXIM)
+    return MAXIM - veces_usadas["hits"]
 
 
 def BlockCaracteristicas(web, atributo):
