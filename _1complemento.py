@@ -5,14 +5,18 @@ from _1html import eliminar_etiqueta, recortador, sustitucion, listar
 
 
 def llamarURL(url):
+    sekunden = 5
     while True:
         try:
             return urlopen(url)
-        except urllib.error.HTTPError or urllib.error.URLError as msg_error:
-            print("Fallo HTTP con '" + url + "', esperando 10 segundos", msg_error)
+        except urllib.error.HTTPError as msg_error:
+            print("HTTP-Fehler '" , url,  "'.", sekunden, "Sekunden warten.", msg_error)
             if 422 == msg_error.code:
                 return None
-            time.sleep(10)
+            time.sleep(sekunden)
+        except urllib.error.URLError as msg_error:
+            print("Vorübergehender Fehler bei der Namensauflösung:'" , url,  "'.", sekunden, "Sekunden warten.", msg_error)
+            time.sleep(sekunden)
 
 
 def ipa(lemma):
