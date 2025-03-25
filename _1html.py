@@ -17,9 +17,12 @@ def eliminar_etiqueta(subweb, etiqueta):
     return subweb
 
 
-
 def recortador(subweb, etiqueta):
     etiqueta_final = "</" + etiqueta + ">"
+    posicion_inicial_etiqueta = subweb.find("<" + etiqueta)
+    if -1 == posicion_inicial_etiqueta:
+        return ""
+    subweb = subweb[posicion_inicial_etiqueta:]
     posicion_ultima_etiqueta_final = subweb.find(etiqueta_final) + len(etiqueta_final)
     recorte = subweb[:posicion_ultima_etiqueta_final]
     while recorte.count(etiqueta_final) != recorte.count("<" + etiqueta):
@@ -129,9 +132,7 @@ def ordenar(html):
     etiqueta_cierre   = '</' + etiqueta_inicial + '>'
     etiqueta_definicion_apertura = '<div class="dwdswb-lesart-def"'
     etiqueta_definicion_cierre   = '</div>'
-    # TODO Ahora la gramática se quiere (evitará limpiar cosas)
-    # etiqueta_definicion_apertura = '<div class="dwdswb-ft-la"'
-    # etiqueta_definicion_cierre   = '</div>'
+    etiqueta_pie_apertura = '<div class="dwdswb-ft-la"'
 
     def listado(bloque):
         orden_posicion_final = bloque.find('"', len(etiqueta_apertura))
@@ -145,25 +146,10 @@ def ordenar(html):
         if 5 == ol_count:
             ol_type = "i"
 
-        # print("ORden:", orden_lista)
-
         posicion_div_inicial = bloque.find(etiqueta_definicion_apertura)
-        posicion_definicion_inicial = bloque.find(">", posicion_div_inicial) + 1
-        posicion_definicion_final   = bloque.find(etiqueta_definicion_cierre, posicion_definicion_inicial)
-        posicion_div_final = posicion_definicion_final + len(etiqueta_definicion_cierre)
-        definicion = bloque[posicion_definicion_inicial:posicion_definicion_final]
-        if definicion == recortador(bloque[bloque.find(etiqueta_definicion_apertura):], "span"):
-            print("EXISTO", definicion)
-        else:
-            print("FRACASO", definicion, "·$·", recortador(bloque[bloque.find(etiqueta_definicion_apertura):], "span"))
-        input("PAUSA")
-        #TODO recortador está claramente mal
-        '''FRACASO  ·$· <div class="dwdswb-lesart-def"></div><div class="dwdswb-ft-la"><div>Grammatik: <span class="dwdswb-einschraenkung">verbindet einzelne Wörter zu einem Satzglied</span>
-PAUSA
-FRACASO  ·$· <div class="dwdswb-lesart-def"></div><div class="dwdswb-ft-la"><div>Grammatik: <span class="dwdswb-einschraenkung">in Aufzählungen</span>
-PAUSA
-FRACASO  ·$· <div class="dwdswb-lesart-def"></div><div class="dwdswb-ft-la"><div>Grammatik: <span class="dwdswb-einschraenkung">bei mehrgliedrigen Aufzählungen steht »und« meist vor dem letzten Glied</span>
-PAUSA'''
+        definicion = recortador(bloque[posicion_div_inicial:], "div")
+        definicion = definicion[definicion.find(">") + 1:-len(etiqueta_definicion_cierre)]
+        definicion += recortador(bloque[bloque.find(etiqueta_pie_apertura):], "div")
 
         posicion_inicial_hijo = bloque.find(etiqueta_apertura,orden_posicion_final)
         if -1 != posicion_inicial_hijo:
