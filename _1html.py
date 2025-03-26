@@ -159,11 +159,8 @@ def ordenar(html):
         else:
             bloque = bloque[:posicion_li_corte_inicial] + definicion + bloque[-len(etiqueta_li_cierre):]
 
-        # print("DEFINICION:", definicion)
         if 0 == len(definicion):
-            # print("bloque:", bloque[bloque.find(">") + 1:-len(etiqueta_li_cierre)])
             return bloque[bloque.find(">") + 1:-len(etiqueta_li_cierre)]
-        # print("BLOQUE:", bloque)
         return bloque
 
     posición_inicial_etiqueta_apertura = html.find(etiqueta_li_apertura)
