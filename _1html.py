@@ -127,16 +127,16 @@ def listar(html):
 
 
 def ordenar(html):
-    etiqueta_inicial  = "li"
-    etiqueta_apertura = '<' + etiqueta_inicial + ' id="'
-    etiqueta_cierre   = '</' + etiqueta_inicial + '>'
+    etiqueta_li  = "li"
+    etiqueta_li_apertura = '<' + etiqueta_li + ' id="'
+    etiqueta_li_cierre   = '</' + etiqueta_li + '>'
     etiqueta_definicion_apertura = '<div class="dwdswb-lesart-def"'
     etiqueta_definicion_cierre   = '</div>'
     etiqueta_pie_apertura = '<div class="dwdswb-ft-la"'
 
     def listado(bloque):
-        orden_posicion_final = bloque.find('"', len(etiqueta_apertura))
-        orden_lista = bloque[len(etiqueta_apertura):orden_posicion_final]
+        orden_posicion_final = bloque.find('"', len(etiqueta_li_apertura))
+        orden_lista = bloque[len(etiqueta_li_apertura):orden_posicion_final]
         ol_type = "1"
         ol_count = orden_lista.count("-")
         if 3 == ol_count:
@@ -146,28 +146,37 @@ def ordenar(html):
         if 5 == ol_count:
             ol_type = "i"
 
-        posicion_div_inicial = bloque.find(etiqueta_definicion_apertura)
-        definicion = recortador(bloque[posicion_div_inicial:], "div")
+        posicion_li_corte_inicial = bloque.find(etiqueta_definicion_apertura)
+        definicion = recortador(bloque[posicion_li_corte_inicial:], "div")
         definicion = definicion[definicion.find(">") + 1:-len(etiqueta_definicion_cierre)]
-        definicion += recortador(bloque[bloque.find(etiqueta_pie_apertura):], "div")
+        #definicion += recortador(bloque[bloque.find(etiqueta_pie_apertura):], "div")
 
-        posicion_inicial_hijo = bloque.find(etiqueta_apertura,orden_posicion_final)
+        posicion_inicial_hijo = bloque.find(etiqueta_li_apertura,orden_posicion_final)
         if -1 != posicion_inicial_hijo:
-            bloque = (bloque[:posicion_div_inicial] + definicion +
+            bloque = (bloque[:posicion_li_corte_inicial] + definicion +
                       '<ol type="' + ol_type + '">' + bloque[posicion_inicial_hijo:])
-            bloque = bloque[:-len(etiqueta_cierre)]    + "</ol>" + bloque[-len(etiqueta_cierre):]
+            bloque = bloque[:-len(etiqueta_li_cierre)]    + "</ol>" + bloque[-len(etiqueta_li_cierre):]
         else:
-            bloque = bloque[:posicion_div_inicial] + definicion + bloque[-len(etiqueta_cierre):]
+            bloque = bloque[:posicion_li_corte_inicial] + definicion + bloque[-len(etiqueta_li_cierre):]
+
+        # print("DEFINICION:", definicion)
+        if 0 == len(definicion):
+            # print("bloque:", bloque[bloque.find(">") + 1:-len(etiqueta_li_cierre)])
+            return bloque[bloque.find(">") + 1:-len(etiqueta_li_cierre)]
+        # print("BLOQUE:", bloque)
         return bloque
 
-    posición_inicial_etiqueta_apertura = html.find(etiqueta_apertura)
+    posición_inicial_etiqueta_apertura = html.find(etiqueta_li_apertura)
     while -1 != posición_inicial_etiqueta_apertura:
-        bloque = recortador(html[posición_inicial_etiqueta_apertura:], etiqueta_inicial)
+        bloque = recortador(html[posición_inicial_etiqueta_apertura:], etiqueta_li)
         posicion_inicial_bloque = html.find(bloque)
         posicion_final_bloque = posicion_inicial_bloque + len(bloque)
 
         bloque = listado(bloque)
         html = html[:posicion_inicial_bloque] + bloque + html[posicion_final_bloque:]
-
-        posición_inicial_etiqueta_apertura = html.find(etiqueta_apertura, posicion_inicial_bloque + len(etiqueta_apertura))
+        if -1 == bloque.find(etiqueta_li_apertura, 0, len(etiqueta_li_apertura)):
+            posición_inicial_etiqueta_apertura = html.find(etiqueta_li_apertura,
+                                                           posición_inicial_etiqueta_apertura)
+        else:
+            posición_inicial_etiqueta_apertura = html.find(etiqueta_li_apertura, posicion_inicial_bloque + len(etiqueta_li_apertura))
     return '<ol type="I">' + html + "</ol>"
