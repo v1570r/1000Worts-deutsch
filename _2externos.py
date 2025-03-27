@@ -1,9 +1,6 @@
-import csv
 import sys
-from argparse import ArgumentError
 import deepl
-
-n_traductor = 0
+from argparse import ArgumentError
 
 
 class Ubersetzungsprogramm:
@@ -20,19 +17,25 @@ class Ubersetzungsprogramm:
         pass
 
     def __deepl(self, text: str) -> str:
-        global n_traductor
         zielsprache = sys.argv[2]
-        global n_traductor
-        traduccion = "Traducido{0}: {1}".format(zielsprache, n_traductor)
-        print("Traducido{0} {1}: {2}".format(zielsprache, n_traductor, text))
-        n_traductor += 1
-        return traduccion
 
         ubersetzungsprogramm = deepl.Translator(self.lizenzschlussel)
-        # ergebnis = ubersetzungsprogramm.translate_text(
-        #     text,
-        #     target_lang=zielsprache,
-        #     source_lang="DE",
-        #     tag_handling="html"
-        # )
-        # return ergebnis.text
+        try:
+            ergebnis = ubersetzungsprogramm.translate_text(
+                text,
+                target_lang=zielsprache,
+                source_lang="DE",
+                tag_handling="html"
+            )
+        except deepl.exceptions.AuthorizationException:
+            ubersetzungsprogramm = deepl.Translator(
+                self.lizenzschlussel,
+                server_url="https://api-free.deepl.com"
+            )
+            ergebnis = ubersetzungsprogramm.translate_text(
+                text,
+                target_lang=zielsprache,
+                source_lang="DE",
+                tag_handling="html"
+            )
+        return ergebnis.text
