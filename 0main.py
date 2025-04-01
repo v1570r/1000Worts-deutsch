@@ -5,9 +5,10 @@ from _1html import sustitucion, listar, ordenar
 from _1traduccion import ubersetzen
 from src.dwds_scraping import zuschneiden
 
-if 2 >= len(sys.argv):
-    print("Requiere un fichero CSV e idioma de destino: https://developers.deepl.com/docs/resources/supported-languages#target-languages ")
-    exit(2)
+##TODO faltan audios
+##TODO arreglar problemas de nombres audios ficheros y donde se almacenan
+##TODO ¿se seleccionan correctamente los audios en  función de la página?
+##TODO solucionad WDG o semejante que aparece al final
 dateiname = sys.argv[1]
 zielsprache = sys.argv[2]
 cabeceras = [

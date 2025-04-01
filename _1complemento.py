@@ -3,6 +3,7 @@ import time
 from random import randint
 from urllib.request import urlopen, urlretrieve
 from _1html import eliminar_etiqueta, recortador, sustitucion, listar
+from src.konstant import AUSSPRACHE_FORMAT, VORHERIG_AUSSPRACHE, ROOT_FOLDER
 
 
 def llamarURL(url):
@@ -39,7 +40,6 @@ def aussprache(web):
     inicio_bloque = "<div "
     fin_bloque = '</div>'
     entrada_mp3 = "https"
-    salida_mp3 = ".mp3"
     entrada_ipa = "["
     salida_ipa = "]"
     inicio = web.find(cabecera_bloque + "Aussprache")
@@ -50,18 +50,19 @@ def aussprache(web):
     aussprache = web[inicio:fin]
 
     inicio_mp3 = aussprache.find(entrada_mp3)
-    fin_mp3 = aussprache.find(salida_mp3) + len(salida_mp3)
+    fin_mp3 = aussprache.find(AUSSPRACHE_FORMAT) + len(AUSSPRACHE_FORMAT)
     url_mp3 = aussprache[inicio_mp3:fin_mp3]
-    posicion_inicial_nombre_mp3 = url_mp3.find("audio")
+    posicion_inicial_nombre_mp3 = url_mp3.find(VORHERIG_AUSSPRACHE)
     if -1 == posicion_inicial_nombre_mp3:
         return None
 
     camino_relativo = url_mp3[posicion_inicial_nombre_mp3:]
-    nombre_mp3 = camino_relativo.split("/")[2][:-len(salida_mp3)] + "-" + camino_relativo.split("/")[1] + salida_mp3
-    ubicacion_mp3 = camino_relativo.split("/")[0]+ "/" + nombre_mp3
-    mp3_paths = camino_relativo.split("/")[0]
-    if not os.path.exists(mp3_paths):
-        os.makedirs(mp3_paths)
+    nombre_mp3 = (VORHERIG_AUSSPRACHE + "-" +
+                  camino_relativo.split("/")[2][:-len(AUSSPRACHE_FORMAT)] + "-" +
+                  camino_relativo.split("/")[1] + AUSSPRACHE_FORMAT)
+    ubicacion_mp3 = ROOT_FOLDER + "/" + nombre_mp3
+    if not os.path.exists(ROOT_FOLDER):
+        os.makedirs(ROOT_FOLDER)
     if not os.path.exists(ubicacion_mp3):
         urlretrieve(
             url_mp3,
