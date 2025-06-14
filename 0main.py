@@ -9,6 +9,8 @@ from src.dwds_scraping import zuschneiden
 ##TODO arreglar problemas de nombres audios ficheros y donde se almacenan
 ##TODO ¿se seleccionan correctamente los audios en  función de la página?
 ##TODO solucionad WDG o semejante que aparece al final
+##TODO algunas palabras tienen más de una pronunicación
+
 dateiname = sys.argv[1]
 zielsprache = sys.argv[2]
 cabeceras = [
@@ -37,14 +39,19 @@ with (open(dateiname, newline='') as datei):
 
             posicion_pagina = reihe["URL"].rfind("#")
             if -1 != posicion_pagina:
-                # print("------PAGINA:", reihe["URL"][posicion_pagina + 1:], "\n\r\tHTML:", web)
+                if "Bewegung" == reihe["Lemma"]:
+                    print("------PAGINA:", reihe["URL"][posicion_pagina + 1:], "\n\r\tHTML:", web)
                 cuadro_definicion = '<div role="tabpanel" class="tab-pane"'
                 id_definicion = 'id="' + reihe["URL"][posicion_pagina + 1:] + '"'
 
                 existe = -1
                 fin_div = 0
                 while -1 == existe:
+                    if "Bewegung" == reihe["Lemma"]:
+                        print("inicio_div:", inicio_div, "\tfin_div:", fin_div, "\tlen(web):", len(web))
                     inicio_div = web.find(cuadro_definicion, fin_div)
+                    if -1 == inicio_div:
+                        break
                     fin_div = web.find(">", inicio_div)
                     existe = web[inicio_div:fin_div].find(id_definicion)
 
@@ -61,8 +68,9 @@ with (open(dateiname, newline='') as datei):
                 #     if -1 == existe:
                 #         inicio_div = web.find(cuadro_definicion, fin_div)
 
-                # print("WEB:", zuschneiden(web[inicio_div:], "div"))
-                web = zuschneiden(web[inicio_div:], "div")
+                # print("WEB:", zuschneiden(web[inicio_div:], "div")
+                if -1 != inicio_div:
+                    web = zuschneiden(web[inicio_div:], "div")
 
             bedeutung = Bedeutung(web, "dwdswb-lesarten")
             if bedeutung is not None:
