@@ -1,8 +1,7 @@
 import sys, csv
 
-from _1complemento import llamarURL, repeticiones, ipa, aussprache, BlockCaracteristicas, Bedeutung, Bedeutungy
-from _1html import sustitucion, listar, ordenar
-from _1traduccion import ubersetzen
+from _1complemento import llamarURL, repeticiones, ipa, aussprache, BlockCaracteristicas
+from src.diccionario import LEODict
 from src.dwds_scraping import zuschneiden
 
 ##TODO faltan audios
@@ -72,24 +71,20 @@ with (open(dateiname, newline='') as datei):
                 if -1 != inicio_div:
                     web = zuschneiden(web[inicio_div:], "div")
 
-            bedeutung = Bedeutung(web, "dwdswb-lesarten")
-            if bedeutung is not None:
-                bedeutung = sustitucion(bedeutung)
-                bedeutung = listar(bedeutung)
-                bedeutung = ordenar(bedeutung)
+            bedeutungs = LEODict(reihe["Lemma"], reihe["Wortart"])
 
             worterbuch.writerow(
                 {
                     "Worthäufigkeit": repeticiones(reihe["Lemma"]),
                     "Lemma": reihe["Lemma"],
-                    "Wortart": reihe["Wortart"],
+                    "Wortart": bedeutungs.type,
                     "Artikel": reihe["Artikel"],
                     "Aussprache": aussprache(web),
                     "IPA": ipa(reihe["Lemma"]),
                     "Grammatik": BlockCaracteristicas(web, "Grammatik"),
                     "Worttrennung": BlockCaracteristicas(web, "Worttrennung"),
                     "Wortzerlegung": BlockCaracteristicas(web, "Wortzerlegung"),
-                    "Bedeutungen": ubersetzen(bedeutung)
+                    "Bedeutungen": bedeutungs.tabelle
                 }
             )
 
