@@ -72,14 +72,20 @@ def aussprache(web):
 
 
 def repeticiones(lemma):#https://www.dwds.de/api/frequency/?q=Haus
-    MAXIM = 1108780648
+    # MAXIM = 1108780648
     url = "https://www.dwds.de/api/frequency/?q=" + urllib.parse.quote(lemma)
     apiseite = llamarURL(url)
     apibytes = apiseite.read()
-    veces_usadas = json.loads(apibytes.decode("utf-8"))
-    if veces_usadas["hits"] is None or veces_usadas["hits"] == 0:
-        return randint(MAXIM, 2*MAXIM)
-    return MAXIM - veces_usadas["hits"]
+    try:
+        return int(json.loads(apibytes.decode("utf-8"))["hits"])
+    except ValueError:
+        return 0
+    except TypeError:
+        return 0
+    # veces_usadas = json.loads(apibytes.decode("utf-8"))
+    # if veces_usadas["hits"] is None or veces_usadas["hits"] == 0:
+    #     return randint(MAXIM, 2*MAXIM)
+    # return MAXIM - veces_usadas["hits"]
 
 
 def BlockCaracteristicas(web, atributo):

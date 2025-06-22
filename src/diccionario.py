@@ -10,6 +10,7 @@ IDs_BEDEUTUNGEN = {
     "Adjektiv"                : "adjadv",
     "Adverb"                  : "adjadv",
     "bestimmter Artikel"      : "praep",
+    "Demonstrativpronomen"    : "praep",
     "Eigenname"               : "subst",
     "Expresion"               : "phrase",
     "Indefinitpronomen"       : "praep",
@@ -92,17 +93,13 @@ class LEODict:
                 if "*" == self.type:
                     listado_tipos = self.bedeutungens
                     listado_expresiones = []
-                    print("listado_tipos:", listado_tipos.values())
                     for expresiones in listado_tipos.values():
-                        print("expresiones:", expresiones)
                         listado_expresiones += expresiones
                 else:
                     listado_expresiones = self.bedeutungens[self.type]
-                print(self.lemma, "listado_e:",listado_expresiones)
             except KeyError:
                 listado_expresiones = self.bedeutungens[list(self.bedeutungens.keys())[0]]
         contenido = ''
-        ##TODO falla con "*" == self.type
         for elemento in listado_expresiones:
             contenido += plantilla.format(
                 elemento["de"],
